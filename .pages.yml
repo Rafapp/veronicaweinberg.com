@@ -1,0 +1,194 @@
+# Editing dashboard config for Pages CMS (https://pagescms.org).
+media:
+  input: images
+  output: /images
+
+content:
+  - name: projects
+    label: Portfolio pages
+    type: collection
+    path: _projects
+    view:
+      fields: [title, hub, hub_order]
+      primary: title
+      sort: [hub_order, title]
+    fields:
+      - name: title
+        label: Page title
+        type: string
+        required: true
+      - name: description
+        label: Search engine description (optional, ~150 characters; defaults to the first section's text)
+        type: text
+      - name: heading
+        label: Big heading at the top (optional; when set, section headings show as small titles)
+        type: string
+      - name: hub
+        label: Also show on the Character Design + Visual Development page?
+        type: select
+        options:
+          values:
+            - value: visual-development
+              label: "Yes"
+      - name: hub_order
+        label: Position on that page (1 = first)
+        type: number
+      - name: hub_rows
+        label: Image rows for that page (optional, replaces this page's images there)
+        type: object
+        list: true
+        fields:
+          - name: images
+            label: Images
+            type: image
+            list: true
+          - name: max_width
+            label: Max width in pixels (optional, default 980)
+            type: number
+          - name: layout
+            label: Layout
+            type: select
+            options:
+              values:
+                - value: row
+                  label: One row
+                - value: columns
+                  label: Two columns (stacked)
+                - value: slideshow
+                  label: Slideshow with thumbnails
+          - name: left_count
+            label: Two columns - how many images go in the left column
+            type: number
+          - name: height
+            label: Slideshow height in pixels (optional, default 557)
+            type: number
+          - name: square_thumbs
+            label: Slideshow - square thumbnails right under the image
+            type: boolean
+      - name: sections
+        label: Sections
+        type: object
+        list: true
+        fields:
+          - name: heading
+            label: Heading
+            type: string
+          - name: description
+            label: Description
+            type: text
+          - name: made_with
+            label: Made in…
+            type: string
+          - name: rows
+            label: Image rows
+            type: object
+            list: true
+            fields:
+              - name: images
+                label: Images (side by side, same height)
+                type: image
+                list: true
+              - name: max_width
+                label: Max width in pixels (optional, default 980)
+                type: number
+              - name: crop
+                label: Crop to shape, width divided by height (optional, e.g. 2 = twice as wide as tall)
+                type: number
+              - name: layout
+                label: Layout
+                type: select
+                options:
+                  values:
+                    - value: row
+                      label: One row
+                    - value: columns
+                      label: Two columns (stacked)
+                    - value: slideshow
+                      label: Slideshow with thumbnails
+              - name: left_count
+                label: Two columns - how many images go in the left column
+                type: number
+              - name: height
+                label: Slideshow height in pixels (optional, default 557)
+                type: number
+              - name: square_thumbs
+                label: Slideshow - square thumbnails right under the image
+                type: boolean
+
+  - name: home
+    label: Home page
+    type: file
+    path: index.html
+    fields:
+      - name: tiles
+        label: Tiles
+        type: object
+        list: true
+        fields:
+          - name: title
+            label: Title
+            type: string
+          - name: subtitle
+            label: Subtitle
+            type: string
+          - name: hover_text
+            label: Text shown over the image on hover (optional, defaults to the title)
+            type: string
+          - name: image
+            label: Image
+            type: image
+          - name: link
+            label: Link (e.g. /illustration/)
+            type: string
+
+  - name: about
+    label: About page
+    type: file
+    path: about.md
+    fields:
+      - name: image
+        label: Photo
+        type: image
+      - name: image_alt
+        label: Photo description
+        type: string
+      - name: body
+        label: Text
+        type: rich-text
+
+  - name: social
+    label: Social links
+    type: file
+    path: _data/social.yml
+    format: yaml
+    fields:
+      - name: links
+        label: Links (footer and About page)
+        type: object
+        list: true
+        fields:
+          - name: name
+            label: Network
+            type: select
+            options:
+              values: [Instagram, LinkedIn, TikTok]
+          - name: url
+            label: Link
+            type: string
+
+  - name: logo
+    label: Animated logo
+    type: file
+    path: _data/logo.yml
+    format: yaml
+    fields:
+      - name: image
+        label: Still logo (shown when animation is off)
+        type: image
+      - name: frames
+        label: Frames (same size as the still logo, in order; leave empty for a subtle automatic wobble)
+        type: image
+        list: true
+      - name: fps
+        label: Frames per second
+        type: number

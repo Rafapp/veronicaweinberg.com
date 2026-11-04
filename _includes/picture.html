@@ -1,0 +1,23 @@
+{%- comment -%}
+  Responsive image. Params: src (e.g. /images/battle-kitchen/01.png), alt, sizes, eager (load first),
+  low (load right away but after everything else).
+  Sizes come from _data/images.json, written by scripts/build_images.py.
+{%- endcomment -%}
+{%- assign key = include.src | remove_first: "/images/" -%}
+{%- assign img = site.data.images[key] -%}
+{%- if img -%}
+  {%- assign srcset = "" -%}
+  {%- assign fallback = img.widths | first -%}
+  {%- for w in img.widths -%}
+    {%- capture one %}{{ "/assets/img/" | append: img.stem | append: "-" | append: w | append: ".webp" | relative_url }} {{ w }}w{% endcapture -%}
+    {%- assign srcset = srcset | append: one -%}
+    {%- unless forloop.last %}{% assign srcset = srcset | append: ", " %}{% endunless -%}
+    {%- if w <= 1920 %}{% assign fallback = w %}{% endif -%}
+  {%- endfor -%}
+  <img src="{{ '/assets/img/' | append: img.stem | append: '-' | append: fallback | append: '.webp' | relative_url }}"
+       srcset="{{ srcset }}" sizes="{{ include.sizes | default: '(max-width: 1012px) 100vw, 980px' }}"
+       width="{{ img.width }}" height="{{ img.height }}" alt="{{ include.alt | escape }}"
+       {% if include.eager %}fetchpriority="high"{% elsif include.low %}fetchpriority="low"{% else %}loading="lazy"{% endif %} decoding="async">
+{%- else -%}
+  <img src="{{ include.src | relative_url }}" alt="{{ include.alt | escape }}" loading="lazy">
+{%- endif -%}

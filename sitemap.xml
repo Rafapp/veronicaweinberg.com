@@ -1,0 +1,21 @@
+---
+layout: null
+sitemap: false
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+{%- assign docs = site.pages | concat: site.projects -%}
+{%- for d in docs -%}
+  {%- if d.sitemap == false or d.url contains ".xml" or d.url contains ".txt" or d.url contains "404" %}{% continue %}{% endif -%}
+  {%- unless d.url contains "/" %}{% continue %}{% endunless %}
+  <url>
+    <loc>{{ d.url | replace: "index.html", "" | absolute_url }}</loc>
+    {%- for s in d.sections -%}{%- for r in s.rows -%}{%- for src in r.images -%}
+    {%- assign key = src | remove_first: "/images/" -%}{%- assign im = site.data.images[key] -%}
+    {%- if im %}
+    <image:image><image:loc>{{ "/assets/img/" | append: im.stem | append: "-share.jpg" | absolute_url }}</image:loc></image:image>
+    {%- endif -%}
+    {%- endfor -%}{%- endfor -%}{%- endfor %}
+  </url>
+{%- endfor %}
+</urlset>

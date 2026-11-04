@@ -1,0 +1,66 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Pillow
+        run: pip install "pillow>=11,<13"
+
+      # Resized images are reused between builds; only new or changed images are processed.
+      - name: Restore resized images
+        uses: actions/cache@v4
+        with:
+          path: |
+            assets/img
+            _data/images.json
+          key: images-${{ hashFiles('images/**', 'scripts/build_images.py') }}
+          restore-keys: images-
+
+      - name: Resize images
+        run: python scripts/build_images.py
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Build site
+        run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
+        env:
+          JEKYLL_ENV: production
+
+      - uses: actions/upload-pages-artifact@v3
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

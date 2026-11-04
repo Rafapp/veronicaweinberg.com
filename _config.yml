@@ -1,0 +1,32 @@
+title: Veronica Weinberg
+tagline: Character Design & Visual Development
+job_title: Visual Developer and Character Designer
+description: Portfolio of Veronica Weinberg, a visual developer and character designer based in Ann Arbor, Michigan. Character design, visual development, background painting, illustration and animation.
+email: vgweinberg@gmail.com
+url: "https://rafapp.github.io"
+baseurl: "/veronicaweinberg.com"
+
+# Keep search engines off the temporary github.io review URL. Set to false at the domain switch.
+noindex: true
+
+permalink: /:title/
+
+collections:
+  projects:
+    output: true
+    permalink: /:name/
+
+defaults:
+  - scope: { path: "", type: projects }
+    values: { layout: project }
+  - scope: { path: "" }
+    values: { layout: page }
+
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - .pages.yml
+  - images
+  - scripts

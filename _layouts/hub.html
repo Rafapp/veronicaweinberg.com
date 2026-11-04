@@ -1,0 +1,15 @@
+---
+layout: default
+---
+{%- comment -%}
+  Lists every project whose "hub" matches this page's "hub_id", sorted by hub_order.
+  Each project shows its first section; hub_rows (optional) replaces the images shown here.
+{%- endcomment -%}
+<div class="page page--hub">
+  <h1 class="hub-title">{{ page.heading | default: page.title | newline_to_br }}</h1>
+  {%- assign items = site.projects | where: "hub", page.hub_id | sort: "hub_order" -%}
+  {%- for p in items -%}
+    {%- assign first = p.sections | first -%}
+    {%- include section.html section=first style="hub" title=p.title rows=p.hub_rows eager=forloop.first -%}
+  {%- endfor -%}
+</div>

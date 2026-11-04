@@ -1,0 +1,56 @@
+{%- comment -%}
+  Renders rows of images. Params: rows (list from front matter), alt (text for every image).
+  Each row: images (list of paths), optional max_width (px, default 980),
+  optional layout "columns" with left_count = how many images stack in the left column,
+  optional crop (width/height ratio, e.g. 2) to crop a single image to that shape.
+  layout "slideshow" shows the row's images one at a time with arrows and thumbnails
+  (optional height in px, default 557; square_thumbs: true for cropped square thumbnails right under the image).
+  Images in a row are scaled to the same height and fill the row width.
+{%- endcomment -%}
+<div class="gallery">
+{%- for row in include.rows -%}
+  {%- assign eager = false %}{% if include.eager and forloop.first %}{% assign eager = true %}{% endif -%}
+  {%- assign maxw = row.max_width | default: 980 -%}
+  {%- assign n = row.images | size -%}
+  {%- if row.layout == "slideshow" -%}
+    <div class="row row--slideshow" style="max-width: {{ maxw }}px">{% include slideshow.html images=row.images height=row.height square_thumbs=row.square_thumbs alt=include.alt eager=eager %}</div>
+  {%- elsif row.layout == "columns" and n > 1 -%}
+    {%- assign left_count = row.left_count | default: 1 -%}
+    {%- assign split = left_count | plus: 1 -%}
+    {%- assign sum_l = 0.0 -%}{%- assign sum_r = 0.0 -%}
+    {%- for src in row.images -%}
+      {%- assign key = src | remove_first: "/images/" -%}{%- assign im = site.data.images[key] -%}
+      {%- assign r = im.height | times: 1.0 | divided_by: im.width -%}
+      {%- if forloop.index <= left_count %}{% assign sum_l = sum_l | plus: r %}{% else %}{% assign sum_r = sum_r | plus: r %}{% endif -%}
+    {%- endfor -%}
+    {%- assign grow_l = 1000.0 | divided_by: sum_l -%}{%- assign grow_r = 1000.0 | divided_by: sum_r -%}
+    {%- assign total = grow_l | plus: grow_r -%}
+    {%- assign px_l = maxw | times: grow_l | divided_by: total | round -%}
+    {%- assign px_r = maxw | times: grow_r | divided_by: total | round -%}
+    <div class="row row--columns" style="max-width: {{ maxw }}px">
+      <div class="col" style="flex: {{ grow_l }} 1 0">
+      {%- for src in row.images -%}
+        {%- if forloop.index == split %}</div><div class="col" style="flex: {{ grow_r }} 1 0">{% endif -%}
+        {%- if forloop.index <= left_count %}{% assign px = px_l %}{% else %}{% assign px = px_r %}{% endif -%}
+        <figure class="cell">{% capture sz %}(max-width: 600px) 100vw, {{ px }}px{% endcapture %}{% include picture.html src=src sizes=sz alt=include.alt eager=eager %}</figure>
+      {%- endfor -%}
+      </div>
+    </div>
+  {%- else -%}
+    {%- assign total = 0.0 -%}
+    {%- for src in row.images -%}
+      {%- assign key = src | remove_first: "/images/" -%}{%- assign im = site.data.images[key] -%}
+      {%- assign total = im.width | times: 1.0 | divided_by: im.height | plus: total -%}
+    {%- endfor -%}
+    <div class="row row--n{% if n > 3 %}4{% else %}{{ n }}{% endif %}" style="max-width: {{ maxw }}px">
+    {%- for src in row.images -%}
+      {%- assign key = src | remove_first: "/images/" -%}{%- assign im = site.data.images[key] -%}
+      {%- assign a = im.width | times: 1.0 | divided_by: im.height -%}
+      {%- assign px = maxw | times: a | divided_by: total | round -%}
+      {%- assign grow = a | times: 1000 -%}
+      <figure class="cell{% if row.crop %} cell--crop{% endif %}" style="flex: {{ grow }} 1 0{% if row.crop %}; aspect-ratio: {{ row.crop }}{% endif %}">{% capture sz %}(max-width: 600px) {% if n > 2 %}50vw{% else %}100vw{% endif %}, {{ px }}px{% endcapture %}{% include picture.html src=src sizes=sz alt=include.alt eager=eager %}</figure>
+    {%- endfor -%}
+    </div>
+  {%- endif -%}
+{%- endfor -%}
+</div>

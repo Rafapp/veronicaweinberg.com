@@ -1,0 +1,89 @@
+{%- comment -%}
+  SEO and link-preview tags. Description: page.description, else the first section's
+  description, else site.description. Preview image: page.image / first gallery image /
+  first home tile, served as a 1200px JPEG made by scripts/build_images.py.
+{%- endcomment -%}
+{%- assign first_section = page.sections | first -%}
+{%- assign desc = page.description | default: first_section.description | default: site.description | markdownify | strip_html | normalize_whitespace | strip | truncate: 160 -%}
+
+{%- assign share_src = page.image -%}
+{%- unless share_src -%}
+  {%- assign first_row = first_section.rows | first -%}
+  {%- assign share_src = first_row.images | first -%}
+{%- endunless -%}
+{%- unless share_src -%}
+  {%- assign first_tile = page.tiles | first -%}
+  {%- assign share_src = first_tile.image -%}
+{%- endunless -%}
+{%- unless share_src %}{% assign home = site.pages | where: "url", "/" | first %}{% assign t = home.tiles | first %}{% assign share_src = t.image %}{% endunless -%}
+{%- assign share_key = share_src | remove_first: "/images/" -%}
+{%- assign share_img = site.data.images[share_key] -%}
+
+{%- if page.url == "/" -%}
+  {%- capture full_title %}{{ site.title }} | {{ site.tagline }}{% endcapture -%}
+{%- else -%}
+  {%- capture full_title %}{{ page.title }} | {{ site.title }}{% endcapture -%}
+{%- endif -%}
+{%- assign canonical = page.url | replace: "index.html", "" | absolute_url -%}
+
+  <title>{{ full_title | strip }}</title>
+  <meta name="description" content="{{ desc | escape }}">
+  <link rel="canonical" href="{{ canonical }}">
+  {%- if site.noindex %}
+  <meta name="robots" content="noindex, nofollow">
+  {%- endif %}
+  <meta name="author" content="{{ site.title }}">
+  <meta property="og:type" content="{% if page.url == '/' %}website{% else %}article{% endif %}">
+  <meta property="og:site_name" content="{{ site.title }}">
+  <meta property="og:title" content="{{ full_title | strip | escape }}">
+  <meta property="og:description" content="{{ desc | escape }}">
+  <meta property="og:url" content="{{ canonical }}">
+  <meta property="og:locale" content="en_US">
+  {%- if share_img %}
+  <meta property="og:image" content="{{ '/assets/img/' | append: share_img.stem | append: '-share.jpg' | absolute_url }}">
+  <meta property="og:image:alt" content="{{ page.title | default: site.title | escape }}, artwork by {{ site.title }}">
+  <meta name="twitter:card" content="summary_large_image">
+  {%- else %}
+  <meta name="twitter:card" content="summary">
+  {%- endif %}
+  <meta name="twitter:title" content="{{ full_title | strip | escape }}">
+  <meta name="twitter:description" content="{{ desc | escape }}">
+
+  {%- comment -%} Structured data: who she is (every page) and what this page is. {%- endcomment -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "{{ '/#person' | absolute_url }}",
+        "name": "{{ site.title }}",
+        "url": "{{ '/' | absolute_url }}",
+        "jobTitle": "{{ site.job_title }}",
+        "email": "mailto:{{ site.email }}",
+        "address": { "@type": "PostalAddress", "addressLocality": "Ann Arbor", "addressRegion": "MI", "addressCountry": "US" },
+        "alumniOf": { "@type": "CollegeOrUniversity", "name": "University of Michigan" },
+        "knowsAbout": ["Character design", "Visual development", "Background painting", "Illustration", "Animation", "Graphic design"],
+        "sameAs": [{% for l in site.data.social.links %}"{{ l.url }}"{% unless forloop.last %}, {% endunless %}{% endfor %}]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "{{ '/#website' | absolute_url }}",
+        "url": "{{ '/' | absolute_url }}",
+        "name": "{{ site.title }}",
+        "publisher": { "@id": "{{ '/#person' | absolute_url }}" }
+      }{% if page.url != "/" %},
+      {
+        "@type": "{% if page.collection == 'projects' %}CreativeWork{% else %}WebPage{% endif %}",
+        "name": {{ page.title | jsonify }},
+        "description": {{ desc | jsonify }},
+        "url": "{{ canonical }}",
+        {%- if share_img %}
+        "image": "{{ '/assets/img/' | append: share_img.stem | append: '-share.jpg' | absolute_url }}",
+        {%- endif %}
+        "author": { "@id": "{{ '/#person' | absolute_url }}" },
+        "isPartOf": { "@id": "{{ '/#website' | absolute_url }}" }
+      }{% endif %}
+    ]
+  }
+  </script>

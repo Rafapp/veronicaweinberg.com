@@ -1,0 +1,14 @@
+{%- comment -%} One portfolio section: heading, description, "made with" line, then images. Params: section, style ("page" or "hub"), title (hub only), rows (optional override). {%- endcomment -%}
+{%- assign s = include.section -%}
+<section class="work work--{{ include.style | default: 'page' }}">
+  {%- if include.style == "hub" -%}
+    {%- if include.title %}<h2 class="work-title-hub">{{ include.title }}</h2>{% endif -%}
+  {%- elsif s.heading -%}
+    {% if include.h1 %}<h1 class="work-title">{{ s.heading }}</h1>{% else %}<h2 class="work-title">{{ s.heading }}</h2>{% endif %}
+  {%- endif -%}
+  {%- if s.description %}<div class="work-text">{{ s.description | markdownify }}</div>{% endif -%}
+  {%- if s.made_with %}<p class="work-made">{{ s.made_with }}</p>{% endif -%}
+  {%- assign rows = include.rows | default: s.rows -%}
+  {%- capture alt %}{{ include.title | default: include.alt | default: s.heading | default: page.title }}, artwork by {{ site.title }}{% endcapture -%}
+  {%- if rows %}{% include gallery.html rows=rows alt=alt eager=include.eager %}{% endif -%}
+</section>

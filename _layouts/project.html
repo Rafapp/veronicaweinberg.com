@@ -1,0 +1,21 @@
+---
+layout: default
+---
+{%- comment -%}
+  Portfolio page. If the page has a "heading", it is shown large at the top and
+  each section heading becomes a small title (same look as the hub page).
+{%- endcomment -%}
+<div class="page page--project{% if page.heading %} page--titled{% endif %}">
+  {%- if page.heading %}<h1 class="hub-title">{{ page.heading | newline_to_br }}</h1>{% endif -%}
+  {%- assign first = page.sections | first -%}
+  {%- assign single = false %}{% if page.sections.size == 1 and first.heading %}{% assign single = true %}{% endif -%}
+  {%- unless page.heading or single %}<h1 class="visually-hidden">{{ page.title }}</h1>{% endunless -%}
+  {%- for section in page.sections -%}
+    {%- if page.heading -%}
+      {%- include section.html section=section style="hub" title=section.heading alt=page.title eager=forloop.first -%}
+    {%- else -%}
+      {%- include section.html section=section style="page" h1=single alt=page.title eager=forloop.first -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {{ content }}
+</div>

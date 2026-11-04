@@ -1,0 +1,21 @@
+---
+layout: default
+---
+<div class="page page--about">
+  <h1 class="visually-hidden">About {{ site.title }}</h1>
+  <div class="about">
+    <div class="about-media">
+      {%- if page.image %}<div class="about-photo">{% include picture.html src=page.image alt=page.image_alt sizes="(max-width: 700px) 100vw, 403px" eager=true %}</div>{% endif -%}
+      {%- if site.data.social.links -%}
+      <ul class="social">
+        {%- for l in site.data.social.links -%}
+        <li><a href="{{ l.url }}" target="_blank" rel="noopener" aria-label="{{ l.name }}">{% include icon.html name=l.name %}</a></li>
+        {%- endfor -%}
+      </ul>
+      {%- endif -%}
+    </div>
+    <div class="about-text">
+      {{ content }}
+    </div>
+  </div>
+</div>

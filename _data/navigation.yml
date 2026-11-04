@@ -1,0 +1,20 @@
+# Top menu. Items with "children" become dropdowns.
+- title: HOME
+  url: /
+- title: ABOUT
+  url: /about/
+- title: PORTFOLIO
+  url: /visual-development/
+  children:
+    - title: Character Design + Visual Development
+      url: /visual-development/
+    - title: Background Painting
+      url: /background-painting/
+    - title: Illustration
+      url: /illustration/
+    - title: Takeout (Short Film)
+      url: /leftover-detective/
+    - title: Graphic Design
+      url: /graphic-design/
+- title: RESUME
+  url: /resume/

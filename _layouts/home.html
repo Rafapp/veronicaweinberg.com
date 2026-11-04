@@ -1,0 +1,16 @@
+---
+layout: default
+---
+<div class="page page--home">
+  <h1 class="visually-hidden">{{ site.title }} | {{ site.tagline }} portfolio</h1>
+  <div class="tiles">
+  {%- for t in page.tiles -%}
+    {%- assign eager = false %}{% if forloop.index <= 2 %}{% assign eager = true %}{% endif %}
+    <a class="tile" href="{{ t.link | relative_url }}">
+      <span class="tile-img">{% include picture.html src=t.image alt=t.title sizes="(max-width: 700px) 100vw, 560px" eager=eager %}<span class="tile-hover" aria-hidden="true"><span>{{ t.hover_text | default: t.title | newline_to_br | replace: "<br />", " " | strip_newlines }}</span></span></span>
+      <span class="tile-title">{{ t.title | newline_to_br }}</span>
+      {%- if t.subtitle %}<span class="tile-sub">{{ t.subtitle | newline_to_br }}</span>{% endif -%}
+    </a>
+  {%- endfor -%}
+  </div>
+</div>

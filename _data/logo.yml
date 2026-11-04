@@ -1,0 +1,8 @@
+# Logo. "image" is the still version; "frames" (same size, in order) are flipped through
+# to animate it. With no frames, the still image gets a subtle CSS "line boil" instead.
+image: /images/site/1.png
+fps: 8
+frames:
+  - /images/site/1.png
+  - /images/site/2.png
+  - /images/site/3.png

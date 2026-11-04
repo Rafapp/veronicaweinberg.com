@@ -1,0 +1,10 @@
+<footer class="site-footer">
+  {%- if site.data.social.links -%}
+  <ul class="social social--footer">
+    {%- for l in site.data.social.links -%}
+    <li><a href="{{ l.url }}" target="_blank" rel="noopener" aria-label="{{ l.name }}">{% include icon.html name=l.name %}</a></li>
+    {%- endfor -%}
+  </ul>
+  {%- endif -%}
+  <p>&copy; <span data-current-year>{{ site.time | date: "%Y" }}</span> Veronica Weinberg</p>
+</footer>

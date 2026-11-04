@@ -1,0 +1,18 @@
+{%- comment -%}
+  Slideshow with arrows and thumbnails. Params: images (list of image paths), height (px, optional).
+{%- endcomment -%}
+<div class="slideshow{% if include.square_thumbs %} slideshow--square{% endif %}" data-slideshow{% if include.height %} style="--slide-h: {{ include.height }}px"{% endif %}>
+  <div class="slides" data-slides>
+  {%- for src in include.images -%}
+    {%- assign e = false %}{% if include.eager and forloop.first %}{% assign e = true %}{% endif -%}
+    <figure class="slide">{% include picture.html src=src sizes="(max-width: 1012px) 100vw, 980px" alt=include.alt eager=e %}</figure>
+  {%- endfor -%}
+  </div>
+  <button class="slide-arrow slide-arrow--prev" data-prev aria-label="Previous image">&#8249;</button>
+  <button class="slide-arrow slide-arrow--next" data-next aria-label="Next image">&#8250;</button>
+  <div class="thumbs">
+  {%- for src in include.images -%}
+    <button class="thumb" data-thumb="{{ forloop.index0 }}" aria-label="Show image {{ forloop.index }}">{% include picture.html src=src sizes="90px" %}</button>
+  {%- endfor -%}
+  </div>
+</div>
