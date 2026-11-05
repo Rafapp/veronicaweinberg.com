@@ -51,3 +51,69 @@ document.querySelectorAll("[data-slideshow]").forEach(function (show) {
   strip.addEventListener("scroll", function () { window.requestAnimationFrame(mark); }, { passive: true });
   mark();
 });
+
+// Lightbox: click an artwork image to see it large over a gray backdrop.
+// Arrows (and the keyboard) step through the other images of the same section; X, Esc or a click outside closes it.
+(function () {
+  var selector = ".cell img, .slide img";
+  if (!document.querySelector(selector) || !window.HTMLDialogElement) return;
+
+  var box = document.createElement("dialog");
+  box.className = "lightbox";
+  box.setAttribute("aria-label", "Enlarged image");
+  box.innerHTML =
+    '<img class="lightbox-img" alt="">' +
+    '<button class="lightbox-btn lightbox-close" aria-label="Close">&times;</button>' +
+    '<button class="lightbox-btn lightbox-prev" aria-label="Previous image">&#8249;</button>' +
+    '<button class="lightbox-btn lightbox-next" aria-label="Next image">&#8250;</button>';
+  document.body.appendChild(box);
+  var big = box.querySelector(".lightbox-img");
+  var group = [], index = 0;
+
+  function show(i) {
+    index = (i + group.length) % group.length;
+    var img = group[index];
+    big.removeAttribute("srcset");
+    big.src = img.currentSrc || img.src;          // already loaded, so it appears instantly
+    if (img.srcset) { big.sizes = "100vw"; big.srcset = img.srcset; } // then swaps to the sharpest size
+    big.alt = img.alt;
+    box.classList.toggle("is-single", group.length < 2);
+  }
+  function open(img) {
+    var section = img.closest(".work") || document;
+    group = Array.prototype.slice.call(section.querySelectorAll(selector));
+    show(group.indexOf(img));
+    document.documentElement.classList.add("has-lightbox");
+    box.showModal();
+  }
+  box.addEventListener("close", function () { document.documentElement.classList.remove("has-lightbox"); });
+
+  box.querySelector(".lightbox-close").addEventListener("click", function () { box.close(); });
+  box.querySelector(".lightbox-prev").addEventListener("click", function () { show(index - 1); });
+  box.querySelector(".lightbox-next").addEventListener("click", function () { show(index + 1); });
+  box.addEventListener("click", function (e) { if (e.target === box) box.close(); }); // the gray area
+  box.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowLeft") show(index - 1);
+    if (e.key === "ArrowRight") show(index + 1);
+  });
+
+  // Swipe left/right on phones
+  var startX = null;
+  box.addEventListener("touchstart", function (e) { startX = e.touches[0].clientX; }, { passive: true });
+  box.addEventListener("touchend", function (e) {
+    if (startX === null) return;
+    var dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 50 && group.length > 1) show(index + (dx < 0 ? 1 : -1));
+    startX = null;
+  });
+
+  document.querySelectorAll(selector).forEach(function (img) {
+    img.classList.add("zoomable");
+    img.tabIndex = 0;
+    img.setAttribute("role", "button");
+    img.addEventListener("click", function () { open(img); });
+    img.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(img); }
+    });
+  });
+})();
