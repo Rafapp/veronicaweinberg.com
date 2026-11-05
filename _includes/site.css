@@ -34,14 +34,11 @@ a { color: inherit; }
 figure { margin: 0; }
 
 /* Header */
-.site-header {
-  height: 240px;
-  padding-top: 13px;
-  border-bottom: 1px solid var(--ink);
-  text-align: center;
-}
-.logo { display: inline-block; width: 327px; height: 142px; }
-.logo img { width: 100%; height: 100%; object-fit: cover; }
+/* Bottom padding is 20px less because the menu text sits ~20px inside the bar */
+.site-header { padding: var(--logo-gap) 0 calc(var(--logo-gap) - 20px); text-align: center; --logo-gap: 50px; }
+/* The box is cropped to the drawn letters so the space above and below them is equal */
+.logo { display: inline-block; vertical-align: top; width: 327px; aspect-ratio: 327 / 84; }
+.logo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 52.4%; }
 /* Line boil: swap between three wobble filters ~8 times a second (defined in _includes/header.html) */
 .boil-filters { position: absolute; width: 0; height: 0; overflow: hidden; }
 .logo--boil img { animation: boil .375s steps(1, end) infinite; }
@@ -55,7 +52,11 @@ figure { margin: 0; }
   66.66%  { filter: url(#boil-3); }
 }
 @media (prefers-reduced-motion: reduce) { .logo--boil img { animation: none; } }
-.nav { margin-top: 29px; }
+.nav {
+  position: sticky; top: 0; z-index: 20;
+  background: var(--bg); border-bottom: 1px solid var(--ink);
+  padding: 4px 0;
+}
 .nav-list { list-style: none; margin: 0; padding: 0; display: flex; justify-content: center; gap: 0; }
 .nav-item { position: relative; }
 .nav-item > a {
@@ -211,9 +212,8 @@ figure { margin: 0; }
 
 /* Phones and small tablets */
 @media (max-width: 700px) {
-  .site-header { height: auto; padding: 12px 0 10px; }
-  .logo { width: 240px; height: 104px; }
-  .nav { margin-top: 14px; }
+  .site-header { --logo-gap: 30px; }
+  .logo { width: 240px; }
   .nav-item > a { padding: 0 9px; font-size: 14px; }
   .page--home { padding-top: 40px; }
   .tiles { grid-template-columns: 1fr; row-gap: 40px; }

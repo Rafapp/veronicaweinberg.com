@@ -17,7 +17,8 @@
     <filter id="boil-2"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="3" xChannelSelector="R" yChannelSelector="G"/></filter>
     <filter id="boil-3"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="13"/><feDisplacementMap in="SourceGraphic" scale="3" xChannelSelector="R" yChannelSelector="G"/></filter>
   </svg>
-  <nav class="nav" aria-label="Main">
+</header>
+<nav class="nav" aria-label="Main">
     <ul id="nav-list" class="nav-list">
       {% for item in site.data.navigation %}
         {% assign active = false %}
@@ -37,4 +38,3 @@
       {% endfor %}
     </ul>
   </nav>
-</header>
